@@ -1,0 +1,24 @@
+# Video Editor AI — Web UI 版依赖
+# 后端核心
+fastapi>=0.111.0
+uvicorn>=0.30.0
+python-multipart>=0.0.9
+aiofiles>=23.2.1
+pydantic>=2.7.0
+
+# 视频处理
+opencv-python>=4.10.0
+moviepy>=2.0.0
+numpy>=1.26.0
+Pillow>=10.0.0
+imageio-ffmpeg>=0.6.0
+ffmpeg-python>=0.2.0
+scipy>=1.12.0
+
+# AI / API
+requests>=2.31.0
+httpx>=0.28.0
+openai>=1.35.0
+
+# 桌面版（可选，已归档到 desktop/）
+# PyQt5>=5.15.9

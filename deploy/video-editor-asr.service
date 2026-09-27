@@ -1,0 +1,17 @@
+[Unit]
+Description=Video Editor Qwen3-ASR (GPU)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/video-editor
+EnvironmentFile=-%h/video-editor/.env
+Environment=ASR_HOST=127.0.0.1
+Environment=ASR_PORT=8123
+Environment=HF_ENDPOINT=https://hf-mirror.com
+ExecStart=%h/video-editor/.venv/bin/python %h/video-editor/asr/qwen_asr_server.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
