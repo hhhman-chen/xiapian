@@ -1,83 +1,47 @@
-# 智能剪辑 Web UI
+# 虾片
 
-基于 FastAPI + React + Vite 的 AI 视频剪辑工具。
+AI 口播精剪：上传毛片 → 理解画面和逐字稿 → 文字即时间线微调 → 导出成片。
 
-> 原 PyQt5 桌面版已归档到 `desktop/` 目录。
+适合知识口播 / 讲书 / 现场口播。对标 ChatCut 的「改字即改片」，不做剪映那种特效商城。
 
-## 功能
+## 能做什么
 
-- 上传视频，自动提取元数据
-- **v8 默认 DeepSeek V4.1-Flash 一步剪**：抽帧 + ASR → 一次 `deepseek-flash` 看图读稿并直接给出 retain/delete（官方不收整段视频）。旧两阶段：`ANALYZE_BACKEND=kimi`
-- 旧版 Ollama 分析仍保留（含 mock 模式）
-- HTML5 视频播放器预览
-- Canvas 时间线：拖拽片段边界、点击切换保留/删除
-- 片段列表编辑标签与保留状态
-- 导出剪辑后的 MP4 视频，可选逐字字幕烧录
-- 项目 JSON 保存/加载
+- 多段毛片上传（大文件分片，躲开 Cloudflare 100MB 限制）
+- Gemini 看视频 + 百炼字级 ASR 出粗剪
+- 口播稿勾选删留，不必重跑 AI
+- 精修：改字幕、美颜、滤镜、转场
+- 口播说到「第一、第二」时自动出要点卡
+- 试用登录（账号在本地 `users.json`，不要提交密钥）
 
 ## 技术栈
 
 | 层 | 技术 |
 |---|---|
-| 后端 | Python 3.9+ / FastAPI / Uvicorn |
+| 后端 | Python 3.10+ / FastAPI / Uvicorn |
 | 前端 | React 18 / TypeScript / Vite |
-| 视频处理 | OpenCV / MoviePy 2.x / FFmpeg |
-| AI 分析 | Moonshot K3 多模态 + Qwen3-ASR |
-| 旧版 AI 分析 | Ollama API（支持 mock 模式） |
+| 视频 | FFmpeg |
+| 理解 | Gemini（`gemini.hhhman.top` 或官方 API） |
+| 语音 | 阿里云百炼 `qwen3-asr-flash-filetrans`（字级时间戳） |
 
-## 快速开始
-
-### 1. 安装依赖
+## 本地运行
 
 ```bash
-cd /Users/chenkangye/workspace/migrated/video-editor
+git clone https://github.com/hhhman-chen/xiapian.git
+cd xiapian
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
 
-前端依赖已包含在 `web/frontend/node_modules`，如需重新安装：
+cp .env.example .env
+# 填 GEMINI_API_KEY、DASHSCOPE_API_KEY、AUTH_SECRET
 
-```bash
-cd web/frontend
-npm install
-npm run build
-```
-
-### 2. 启动 ASR 服务（声音通道）
-
-v6 分析需要本地 Qwen3-ASR 服务做语音转录：
-
-```bash
-./start_asr.sh
-```
-
-它会在 `http://127.0.0.1:8123` 启动 Qwen3-ASR-1.7B + ForcedAligner。
-
-### 3. 启动主服务
-
-```bash
-./start.sh
-```
-
-或手动启动后端：
-
-```bash
-source .venv/bin/activate
+cd web/frontend && npm install && npm run build && cd ../..
 python3 -m web.backend.app
 ```
 
-然后浏览器打开 http://127.0.0.1:8000
+浏览器打开 http://127.0.0.1:8000
 
-命令行验收（不走 UI）：
-
-```bash
-python3 -m web.backend.run_cut \
-  --video ~/.openclaw/workspace/obsidian-vault-video-editor/赵湄原片.mp4 \
-  --target 153 --export --subtitle
-```
-
-成片写到 `output/<文件名>_cut/final.mp4`。目标时长填 `0` 表示不强制二轮精简。
+`.env` 示例见 `.env.example`。不要把真实 Key、`users.json`、成片和项目目录推到 GitHub。
 
 ### 4. AI 模型配置
 

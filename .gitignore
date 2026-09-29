@@ -8,7 +8,12 @@ __pycache__/
 node_modules/
 web/frontend/dist/
 
+.env
+.env.*
+!.env.example
 users.json
+*.docx
+使用教程.md
 projects/
 output/
 temp/
